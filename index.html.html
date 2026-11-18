@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="robots" content="noindex">
+<title>패스오더 홍보물 비치 사진 올리기</title>
+<style>
+  /* ===== 설정: 배포 전에 여기만 바꾸면 됩니다 ===== */
+  :root{
+    --accent:#3b5bdb;      /* 버튼 색 (브랜드 색으로 교체) */
+    --accent-soft:#eef1fd;
+  }
+  /* ============================================== */
+  :root{--ink:#1d1f23;--sub:#6b7079;--line:#e4e6ea;--bg:#f4f5f7;--good:#2b8a3e;--good-soft:#ebf7ee;--bad:#c92a2a;--bad-soft:#fdecec}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:#fff}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;color:var(--ink);font-size:15px}
+  .app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;padding:24px 20px calc(20px + env(safe-area-inset-bottom))}
+  .brand{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:18px}
+  h1{font-size:22px;line-height:1.4;margin:0 0 8px}
+  p.lead{margin:0 0 18px;color:var(--sub);line-height:1.6}
+  .store{display:flex;gap:10px;align-items:center;background:var(--bg);border-radius:12px;padding:12px 14px;margin-bottom:18px}
+  .store .ic{font-size:20px}
+  .store b{display:block;font-size:15px}
+  .store span{font-size:12px;color:var(--sub)}
+  .guide{border:1px solid var(--line);border-radius:12px;margin-bottom:18px;overflow:hidden}
+  .guide summary{list-style:none;cursor:pointer;padding:13px 14px;font-weight:700;font-size:14px;display:flex;justify-content:space-between}
+  .guide summary::-webkit-details-marker{display:none}
+  .guide summary:after{content:'펼치기';font-weight:400;color:var(--sub);font-size:13px}
+  .guide[open] summary:after{content:'접기'}
+  .guide ul{margin:0;padding:0 14px 14px 30px;line-height:1.8;font-size:14px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+  .slot{aspect-ratio:1;border-radius:12px;overflow:hidden;position:relative;background:var(--bg)}
+  .slot img{width:100%;height:100%;object-fit:cover;display:block}
+  .slot button{position:absolute;top:5px;right:5px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:13px;line-height:24px;padding:0;cursor:pointer}
+  .slot.empty{border:1.5px dashed #c8ccd4;background:#fafbfc;display:flex;align-items:center;justify-content:center;color:#a0a5ae;font-size:13px}
+  .count{font-size:13px;color:var(--sub);margin-bottom:14px}
+  .count.ok{color:var(--good);font-weight:700}
+  .pick{display:flex;gap:8px;margin-bottom:8px}
+  .pick label{flex:1;text-align:center;border:1px solid var(--line);border-radius:10px;padding:12px 6px;font-size:14px;cursor:pointer;background:#fff}
+  .pick input{display:none}
+  .spacer{flex:1;min-height:16px}
+  .btn{display:block;width:100%;border:0;border-radius:12px;padding:16px;font:inherit;font-size:16px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff}
+  .btn:disabled{background:#c8ccd4;cursor:not-allowed}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);font-weight:500;margin-top:8px}
+  .msg{border-radius:12px;padding:16px;line-height:1.6;margin-bottom:16px}
+  .msg b{display:block;font-size:17px;margin-bottom:4px}
+  .msg.good{background:var(--good-soft);color:var(--good)}
+  .msg.bad{background:var(--bad-soft);color:var(--bad)}
+  .center{text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center}
+  .big{font-size:52px;margin-bottom:8px}
+  .spin{width:44px;height:44px;border-radius:50%;border:4px solid var(--accent-soft);border-top-color:var(--accent);animation:s .9s linear infinite;margin-bottom:16px}
+  @keyframes s{to{transform:rotate(360deg)}}
+  .bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;width:200px;margin-top:12px}
+  .bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+  .help{font-size:13px;color:var(--sub);text-align:center;margin-top:14px;line-height:1.6}
+  .help a{color:var(--sub)}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <!-- 1. 업로드 화면 -->
+  <section id="v-upload" hidden style="display:flex;flex-direction:column;flex:1">
+    <div class="brand">패스오더</div>
+    <h1>홍보물 비치 사진을<br>올려주세요</h1>
+    <p class="lead">사진이 확인되면 도입이 완료되고 고객 주문 접수가 시작돼요.</p>
+
+    <div class="store"><span class="ic">🏪</span><div><b id="storeName"></b><span id="storeSub"></span></div></div>
+
+    <details class="guide" open>
+      <summary>이렇게 찍어주세요</summary>
+      <ul id="guideList"></ul>
+    </details>
+
+    <div class="grid" id="grid"></div>
+    <div class="count" id="count"></div>
+
+    <div class="pick">
+      <label>📷 카메라로 찍기<input type="file" accept="image/*" capture="environment" id="inCam"></label>
+      <label>🖼️ 앨범에서 선택<input type="file" accept="image/*" multiple id="inAlbum"></label>
+    </div>
+
+    <div class="spacer"></div>
+    <button class="btn" id="submit" disabled>사진 제출하기</button>
+    <div class="help">문제가 있으면 <a href="http://wlj3v.channel.io" target="_blank" rel="noopener">파트너지원팀 1:1 문의</a></div>
+  </section>
+
+  <!-- 2. 전송 중 -->
+  <section id="v-sending" class="center" hidden>
+    <div class="spin"></div>
+    <b>사진을 보내고 있어요</b>
+    <div class="bar"><i id="prog"></i></div>
+    <p class="lead" style="margin-top:12px">화면을 닫지 말아 주세요</p>
+  </section>
+
+  <!-- 3. 완료 -->
+  <section id="v-done" hidden style="display:flex;flex-direction:column;flex:1">
+    <div class="center">
+      <div class="big">🎉</div>
+      <div class="msg good" style="text-align:left;width:100%"><b>제출이 완료됐어요</b><span id="doneText">담당자가 사진을 확인한 뒤 매장 주문 접수를 열어드릴게요. 확인이 끝나면 알림톡으로 알려드려요.</span></div>
+    </div>
+    <button class="btn ghost" id="more">사진 더 보내기</button>
+  </section>
+
+  <!-- 4. 이미 제출함 -->
+  <section id="v-already" hidden style="display:flex;flex-direction:column;flex:1">
+    <div class="center">
+      <div class="big">✅</div>
+      <div class="msg good" style="text-align:left;width:100%"><b>이미 사진을 보내주셨어요</b><span id="alreadyText"></span></div>
+    </div>
+    <button class="btn ghost" id="again">사진 다시 보내기</button>
+  </section>
+
+  <!-- 5. 오류 -->
+  <section id="v-error" hidden style="display:flex;flex-direction:column;flex:1">
+    <div class="center">
+      <div class="big">⚠️</div>
+      <div class="msg bad" style="text-align:left;width:100%"><b id="errTitle">전송하지 못했어요</b><span id="errText"></span></div>
+    </div>
+    <button class="btn" id="retry">다시 시도하기</button>
+    <div class="help">계속 안 되면 <a href="http://wlj3v.channel.io" target="_blank" rel="noopener">파트너지원팀 1:1 문의</a>로 사진을 보내주세요</div>
+  </section>
+</div>
+
+<script>
+/* ===== 설정: 배포 전에 여기만 바꾸면 됩니다 ===== */
+const CONFIG = {
+  // Apps Script 웹 앱 URL (배포 후 받은 .../exec 주소)
+  ENDPOINT: 'https://script.google.com/macros/s/AKfycbzmboLXhPhsOa3rEj-ZbNVb2LbjTZu-nJbruSNZdSnFanNE_MOay_SH0hF1YIjvQcxE/exec',
+  MIN_PHOTOS: 3,         // 최소 사진 수
+  MAX_PHOTOS: 10,        // 최대 사진 수
+  MAX_SIDE: 1600,        // 업로드 전 긴 변 기준 축소 크기(px)
+  JPEG_QUALITY: 0.82,
+  // 촬영 가이드 문구 (웰컴킷 사진인증 가이드 내용으로 교체)
+  GUIDE: [
+    '홍보물이 실제로 놓인 위치에서 찍어주세요',
+    '홍보물이 잘 보이게 가까이 찍어주세요',
+    '비치한 곳마다 한 장씩, 최소 3장을 올려주세요',
+    '화면 캡처나 시안 이미지는 인정되지 않아요'
+  ]
+};
+/* ============================================== */
+
+const $ = id => document.getElementById(id);
+const q = new URLSearchParams(location.search);
+const storeId = (q.get('s') || '').trim();
+const storeName = (q.get('n') || '').trim();
+let photos = []; // {dataUrl}
+
+function show(v){ ['upload','sending','done','already','error'].forEach(k => $('v-'+k).hidden = k !== v); }
+
+function fail(title, text){ $('errTitle').textContent = title; $('errText').textContent = text; show('error'); }
+
+function render(){
+  const g = $('grid'); g.innerHTML = '';
+  const slots = Math.max(CONFIG.MIN_PHOTOS, Math.min(photos.length + 1, CONFIG.MAX_PHOTOS));
+  for (let i = 0; i < slots; i++){
+    const d = document.createElement('div');
+    if (i < photos.length){
+      d.className = 'slot';
+      const img = new Image(); img.src = photos[i].dataUrl; img.alt = '사진 ' + (i + 1);
+      const x = document.createElement('button'); x.type = 'button'; x.textContent = '✕'; x.setAttribute('aria-label','사진 삭제');
+      x.onclick = () => { photos.splice(i, 1); render(); };
+      d.append(img, x);
+    } else { d.className = 'slot empty'; d.textContent = (i + 1) + '번째'; }
+    g.append(d);
+  }
+  const ok = photos.length >= CONFIG.MIN_PHOTOS;
+  $('count').className = 'count' + (ok ? ' ok' : '');
+  $('count').textContent = ok ? `${photos.length}장 · 제출할 수 있어요` : `${photos.length}/${CONFIG.MIN_PHOTOS}장 · 최소 ${CONFIG.MIN_PHOTOS}장이 필요해요`;
+  $('submit').disabled = !ok;
+  document.querySelectorAll('.pick label').forEach(l => l.style.opacity = photos.length >= CONFIG.MAX_PHOTOS ? .4 : 1);
+}
+
+// 사진을 축소해서 JPEG로 변환 (용량 줄이기)
+function shrink(file){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const r = Math.min(1, CONFIG.MAX_SIDE / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * r); c.height = Math.round(img.height * r);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL('image/jpeg', CONFIG.JPEG_QUALITY));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('이미지를 읽지 못했어요')); };
+    img.src = url;
+  });
+}
+
+async function addFiles(list){
+  const files = [...list].filter(f => f.type.startsWith('image/')).slice(0, CONFIG.MAX_PHOTOS - photos.length);
+  for (const f of files){
+    try { photos.push({ dataUrl: await shrink(f) }); } catch(e){ /* 읽을 수 없는 파일은 건너뜀 */ }
+  }
+  render();
+}
+
+['inCam','inAlbum'].forEach(id => $(id).onchange = e => { addFiles(e.target.files); e.target.value = ''; });
+
+async function submit(){
+  show('sending');
+  const prog = $('prog'); prog.style.width = '15%';
+  const t = setInterval(() => { const w = parseFloat(prog.style.width); if (w < 90) prog.style.width = (w + 5) + '%'; }, 400);
+  try {
+    // text/plain 으로 보내야 Apps Script에서 CORS 사전요청 없이 받을 수 있음
+    const res = await fetch(CONFIG.ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'upload', storeId, storeName, photos: photos.map(p => p.dataUrl), ua: navigator.userAgent })
+    });
+    const data = await res.json();
+    clearInterval(t); prog.style.width = '100%';
+    if (!data.ok) throw new Error(data.error || '알 수 없는 오류');
+    photos = [];
+    show('done');
+  } catch(e){
+    clearInterval(t);
+    fail('전송하지 못했어요', '인터넷 연결을 확인하고 다시 시도해 주세요. (' + e.message + ')');
+  }
+}
+
+$('submit').onclick = submit;
+$('retry').onclick = () => { if (photos.length) submit(); else { render(); show('upload'); } };
+$('more').onclick = $('again').onclick = () => { render(); show('upload'); };
+
+async function init(){
+  $('guideList').innerHTML = CONFIG.GUIDE.map(g => `<li>${g.replace(/</g,'&lt;')}</li>`).join('');
+  if (!storeId){ fail('매장 정보를 찾을 수 없어요', '알림톡의 버튼을 눌러 다시 들어와 주세요.'); return; }
+  $('storeName').textContent = storeName || '매장 정보를 불러오는 중…';
+  $('storeSub').textContent = storeName ? '우리 매장이 맞는지 확인해 주세요' : '';
+  render();
+  show('upload'); // 화면은 바로 보여주고, 매장 이름과 제출 여부는 뒤에서 확인
+  try {
+    const res = await fetch(CONFIG.ENDPOINT + '?action=status&s=' + encodeURIComponent(storeId));
+    const data = await res.json();
+    if (!storeName && !(data.ok && data.storeName)){
+      $('storeName').textContent = '매장 ID ' + storeId.slice(0, 8);
+      $('storeSub').textContent = '알림톡으로 받은 매장이 맞는지 확인해 주세요';
+    }
+    if (data.ok && data.storeName && !storeName){
+      $('storeName').textContent = data.storeName;
+      $('storeSub').textContent = '우리 매장이 맞는지 확인해 주세요';
+    }
+    if (data.ok && data.submitted){
+      $('alreadyText').textContent = `${data.lastSubmittedAt}에 ${data.lastCount}장을 받았어요. 확인이 끝나면 알림톡으로 알려드려요.`;
+      if (!photos.length) show('already');
+    }
+  } catch(e){}
+}
+init();
+</script>
+</body>
+</html>
